@@ -76,7 +76,7 @@ namespace Com.Aote.Pages
             }
             //将产生的json串送后台服务进行处理
             WebClientInfo wci = Application.Current.Resources["server"] as WebClientInfo;
-            string uri = wci.BaseAddress + "/handcharge/record/batch/" + ui_handdate.SelectedDate + "/" + ui_sgnetwork.Text + "/" + ui_sgoperator.Text + "/" + chaobiaoriqi.SelectedDate + "?uuid=" + System.Guid.NewGuid().ToString();
+            string uri = wci.BaseAddress + "/handcharge/record/batch/" + ui_handdate.SelectedDate + "/" + ui_sgnetwork.Text + "/" + ui_sgoperator.Text + "/" + chaobiaoriqi.SelectedDate +"/" +meter.SelectedValue.ToString() + "?uuid=" + System.Guid.NewGuid().ToString();
             WebClient client = new WebClient();
          	client.UploadStringCompleted += client_UploadStringCompleted;
             client.UploadStringAsync(new Uri(uri), json);
@@ -85,7 +85,14 @@ namespace Com.Aote.Pages
         void client_UploadStringCompleted(object sender, UploadStringCompletedEventArgs e)
         {
             ui_handBusy.IsBusy = false;
-
+            if (e.Error == null)
+            {
+                //弹出错误信息
+                if (e.Result != "")
+                {
+                    MessageBox.Show(e.Result);
+                }
+            }
             //有错误
             if (e.Error != null)
             {
@@ -144,7 +151,6 @@ namespace Com.Aote.Pages
 
                 //把数据转换成JSON
                 JsonArray items = JsonValue.Parse(e.Result) as JsonArray;
-
                 daninfos.ItemsSource = list;
                 if(list.Size!=0)
                 {
